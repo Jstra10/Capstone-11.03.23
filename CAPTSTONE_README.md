@@ -11,7 +11,10 @@ In R Studio a connection was made to the PostgeSQL database and a query was perf
 # Tools and Procedures:
 R Studio [My RStudio File](Dark_Arrest_Couple_Study_11.3.2023.Rmd)
 PowerBI [Download Power BI Report](capstone_dashboard.pbix)
-PostgreSQL  ![ALT Text](Documentation/crime_data_ERD.pgerd.png)
+PostgreSQL  ![My Image](Documentation/Documentation\PostgreSQL.PNG)
+
+# Data Analysis Flow Chart
+![My Image][Documentation\Presentation1.png]
 
 
 
@@ -93,3 +96,5 @@ The RMSE (root mean squared error is 25.04585), showing on average the model wil
 
 We conclude the analysis rejecting the alternative hypotheses. The correlation with increased darkness is absent. Given the lack of correlation, the Poisson model had a difficult time predicting the amount of events that would occur on a given day.
 The largest correlation to total arrests shows .0388679. Showing a very low significance.
+
+[def]: Documentation/Documentation\Presentation1.png
