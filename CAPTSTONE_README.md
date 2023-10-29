@@ -9,12 +9,12 @@ In R Studio a connection was made to the PostgeSQL database and a query was perf
 
 
 # Tools and Procedures:
-R Studio [My RStudio File](Dark_Arrest_Couple_Study_11.3.2023.Rmd)
-PowerBI [Download Power BI Report](capstone_dashboard.pbix)
-PostgreSQL  ![My Image](Documentation/Documentation\PostgreSQL.PNG)
+R Studio [My RStudio File](Dark_Arrest_Couple_Study_11.3.2023.Rmd),
+PowerBI [Download Power BI Report](capstone_dashboard.pbix),
+PostgreSQL
 
 # Data Analysis Flow Chart
-![My Image][Documentation\Presentation1.png]
+![My Image](Documentation/Presentation1.png)
 
 
 
