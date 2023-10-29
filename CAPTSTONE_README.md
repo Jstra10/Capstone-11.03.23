@@ -9,9 +9,10 @@ In R Studio a connection was made to the PostgeSQL database and a query was perf
 
 
 # Tools and Procedures:
-PostgreSQL  ![ALT Text](Documentation/crime_data_ERD.pgerd.png)
 R Studio [My RStudio File](Dark_Arrest_Couple_Study_11.3.2023.Rmd)
 PowerBI [Download Power BI Report](capstone_dashboard.pbix)
+PostgreSQL  ![ALT Text](Documentation/crime_data_ERD.pgerd.png)
+
 
 
 # Data Sets:
@@ -53,10 +54,10 @@ This allowed a quick understanding the data for the anlaysis in R.
 
 ![My Image](Documentation/BI_Dashboard.PNG)
 
-Querried the data from R Studio and formatted for testing analysis. 
+Querried the data from R Studio, and formatted/cleaned for testing analysis. 
 
 Step III: 
-Created additional visualizations in R Studio to view the varible relationships.
+Created additional visualizations in R Studio to view the variable relationships.
 
 ![My Chart](Documentation/R_Arrest_min_of_dark) 
 
