@@ -1,0 +1,249 @@
+# Coding Temple Capstone I:
+
+## Decreasing Sunlight and Aggression
+
+During the year, the amount of sunlight during a day changes. Throughout the midwest, seasonal depression has an impact on many people. Does it have an impact on their aggression? In this test we will analyze \~52,000 arrest records from the State of Ohio. We will examine relationships with the meteorological data from the same period. The premise in this study is take the arrest record data set, clean, transform, model/stat test, and explore with visualizations. \# \# \#
+
+### Ha: As the minutes of sunlight decrease in a 24 period, there is no change to arrests between Significant Others.
+
+### Ho: As the minutes of darkness increase in a 24 hour period, arrests increase between couples and ex-couples.
+
+### I: Imports
+
+```{r}
+# Install/import pacakges/libraries needed
+install.packages('tidyverse')
+install.packages("RPostgreSQL")
+library('tidyverse')
+library('RPostgreSQL')
+library(DBI)
+library(ggplot2)
+```
+
+1a. Create PostgreSQL connection
+
+```{r}
+
+# PostgreSQL Connection String with postgres database requirements
+connection_string <- "Driver={PostgreSQL ODBC Driver(UNICODE)};Server=localhost;Port=5432;Database=capstone;Uid=postgres;Pwd=sydney187;"
+
+# Create Database Connection
+con <- dbConnect(odbc::odbc(), .connection_string = connection_string, timeout = 10)
+
+```
+
+1b. Query database data for testing
+
+```{r}
+# query from the postgres database to obtain testing data
+query <- 'SELECT crime_data.incident_date,crime_data.incident_hour, crime_data.sex_code, dark.minutes_of_darkness, dark.dark_is
+FROM crime_data
+JOIN dark ON crime_data.incident_date = dark.day;'
+#df <- dbGetQuery(con, query)
+```
+
+```{r}
+# Verifying all data and view as a tibble
+print(df)
+df <- as_tibble(df)
+view(df)
+```
+
+1c. Close PostgreSQL connection, as data is stored as "df"
+
+```{r}
+# Disconnect from the postgres database
+dbDisconnect(con)
+```
+
+### II: Data Cleaning
+
+-   Column Headers (R Style Guidelines)
+
+-   Null Values
+
+-   Column Data Types
+
+-   Column Header Formatting
+
+-   Change sex_code column to be a Boolean type
+
+-   Remove/filter columns
+
+```{r}
+str(df)
+names(df)
+```
+
+Verify Nulls (16 null values out of 52,327)
+
+```{r}
+colSums(is.na(df))
+```
+
+Remove 16 null rows
+
+```{r}
+df <- df[complete.cases(df$incident_hour), ]
+colSums(is.na(df))
+
+```
+
+Created a new binary column = m_f. This references the sex_code category.
+
+```{r}
+df$m_f <- ifelse(df$sex_code == "M", 1, 0)
+```
+
+Transformed the dark_is column values to 1 & 0 instead of "Increasing/Decreasing"
+
+```{r}
+df$dark_is <- ifelse(df$dark_is == "Increasing", 1, 0)
+df
+```
+
+Removed the sex_code column
+
+```{r}
+df <- subset(df, select = -c(sex_code))
+df
+```
+
+Created a new column to display if the minutes of darkness is over half a 24 hour period
+
+```{r}
+df$darker <- ifelse(df$minutes_of_darkness > 700, 1, 0)
+```
+
+### III: Statistical Test and Analysis
+
+```{r}
+# Creating a visual to see the mapping of arrests and minutes of darkness
+ggplot(adf) +
+  geom_point(aes(x = incidents, y = minutes_of_darkness, color = dark_is)) +
+  labs(title = "Comparison of Arrests and Minutes of Darkness", x = "Arrests", y = "Minutes Of Darkness") +
+  scale_color_gradient(low = "blue", high = "red")
+```
+
+```{r}
+# Create a plot showing the model predicted data vs. actual data
+adf <- adf %>%
+  mutate(predicted_counts = predict(poisson_model, type = "response"))
+
+ggplot(adf, aes(x = incidents, y = predicted_counts)) +
+  geom_point(aes(color = "Actual"), alpha = 0.6, size = 3) +  
+  geom_point(aes(color = "Predicted"), shape = 1, size = 3) + 
+  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed") +
+  scale_color_manual(values = c("Actual" = "blue", "Predicted" = "black")) +
+  labs(
+    title = "Actual Data vs. Predicted",
+    x = "Actual",
+    y = "Predicted"
+  )
+```
+
+```{r}
+cor(adf[sapply(adf,is.numeric)])
+
+```
+
+As dark is increasing (dark_is) there is a (very small) 0.091 correlation with incidents!
+
+```{r}
+ggplot(adf) +
+  geom_point(aes(x = incident_date, y = incidents,color = minutes_of_darkness)) +
+  labs(title = "Comparison of Arrests and Minutes of Darkness", x = "Date of Arrests", y = "Arrests")
+```
+
+Looking at the Arrests over Minutes of Darkness, you can see a peak of arrests when sunlight is highest.
+
+But, you can also see the arrests rising when the dark is increasing! Lets start the Poisson test.
+
+```{r}
+# create a incident column counting the arrests for each date giving the model an additional variable to think with
+# using the poisson test to predict arrests
+?poisson
+adf <- df %>%
+  group_by(incident_date) %>%
+  mutate(incidents = n()) %>%
+  ungroup()
+adf
+
+poisson_model <- glm(incidents ~ minutes_of_darkness + dark_is + m_f + darker, data = adf, family = "poisson")
+poisson_model
+
+#plot(poisson_model)
+
+```
+
+A one unit increase in minute of darkness shows a decrease in arrests. Rejecting the Alternative Hypothesis.. But, Wait! There is a small correlation of arrests to when the dark is increasing throughout the year!
+
+```{r}
+# populating the predicted values from the poisson model
+predicted_values <- predict(poisson_model, type = "response")
+
+# calculating the Mean Absolut Error and Root Mean Squared Error
+actual_values <- adf$incidents
+mae <- mean(abs(predicted_values - actual_values))
+rmse <- sqrt(mean((predicted_values - actual_values)^2))
+#actual_values
+mae
+rmse
+
+
+```
+
+The MAE (mean absolute error is 19.45887). On average the model will predict within 19.45 arrests.
+
+The RMSE (root mean squared error is 25.04585) On average the model will predict within 25.04 arrests
+
+# Results
+
+We conclude the analysis rejecting the alternative hypotheses. The correlation with increased darkness is absent. Given the lack of correlation, the Poisson model had a difficult time predicting the amount of events that would occur on a given day.
+
+### Test II: Just for fun, we will total each arrest, by date, (for each combination of the remaining variables!) (our own way to pivot long)
+
+```{r}
+arrest_data <- df %>%
+  group_by(incident_date, incident_hour, minutes_of_darkness, dark_is, m_f, darker)   %>% summarize(arrest = n()) %>%
+  ungroup()
+arrest_data
+```
+
+```{r}
+# Poisson test # 2
+poisson_model1 <- glm(arrest ~ minutes_of_darkness + dark_is + m_f + darker, data = arrest_data, family = "poisson")
+poisson_model1
+
+```
+
+A one unit increase in minute of darkness shows a decrease in arrests. Rejecting the Alternative Hypothesis.
+
+```{r}
+predicted_values1 <- predict(poisson_model1, type = "response")
+
+actual_values1 <- arrest_data$arrest
+mae1 <- mean(abs(predicted_values - actual_values1))
+rmse1 <- sqrt(mean((predicted_values - actual_values1)^2))
+#actual_values
+mae1
+rmse1
+```
+
+```{r}
+arrest_data <- arrest_data %>%
+  mutate(predicted_counts = predict(poisson_model1, type = "response"))
+
+ggplot(arrest_data, aes(x = arrest, y = predicted_counts)) +
+  geom_point(aes(color = "Actual"), alpha = 0.6, size = 3) +  
+  geom_point(aes(color = "Predicted"), shape = 1, size = 3) + 
+  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed") +
+  scale_color_manual(values = c("Actual" = "blue", "Predicted" = "black")) +
+  labs(
+    title = "Actual Data vs. Predicted",
+    x = "Actual",
+    y = "Predicted"
+  )
+```
+
+Given the results of the test, this method for analyzing the data was far worse!!! With way worse accuracy.

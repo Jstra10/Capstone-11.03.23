@@ -1,0 +1,136 @@
+------------------------------------------------------------------------
+
+------------------------------------------------------------------------
+
+install.packages('tidyverse')
+
+```{r}
+install.packages('tidyverse')
+```
+
+```{r}
+library(tidyverse)
+?tidyr
+
+```
+
+```{r}
+
+cd <- read.csv("C:/Users/jjs61/OneDrive/Desktop/Capstone/old/Cleaned_query.csv")
+class(cd$incident_hour) ="Numeric"
+str(cd)
+```
+
+```{r}
+# Create a sequence of numbers from 1 to the number of 
+```
+
+```{r}
+# move the unique id column to the first one
+
+```
+
+```{r}
+
+names(cd) <- names(cd) %>% str_replace_all("\\.", "_") %>% str_to_lower()
+
+
+
+```
+
+```{r}
+cd  %>% summarise(na_count = sum(is.na(cd)))
+
+# Using base R
+colSums(is.na(cd))
+sum(is.na(cd))
+```
+
+```{r}
+cd%>%summarise(data_type = class(cd))
+str(cd)
+
+
+View(cd)
+
+
+```
+
+```{r}
+cd <- cd[, -which(names(cd) == "date_of_incident")]
+
+```
+
+```{r}
+cd <- as_tibble(cd)
+view(cd)
+```
+
+```{r}
+cd
+average_incident_hour <- mean(cd$incident_hour)
+
+
+ggplot(cd) +
+  geom_histogram(binwidth = 0.09, aes(x= minutes_of_dark, fill='blue', color='black') +
+  geom_vline(xintercept = average_incident_hour, color = 'white', linetype = 'dashed') 
+
+```
+
+```{r}
+library(ggplot2)
+
+ggplot(cd) +
+  geom_histogram(binwidth = 25, aes(x = minutes_of_dark, fill = 'red', color = 'black')) +
+  geom_vline(xintercept = mean(cd$minutes_of_dark), color = 'green', linetype = 'dashed')
+```
+
+```{r}
+ggplot(cd) +
+  geom_boxplot(aes(x = average_high, y = minutes_of_dark), fill = "blue") +
+  labs(title = "Box Plot of User Scores Over Time", x = "Release Year", y = "User Score")
+```
+
+```{r}
+ggplot(cd) +
+  geom_point(aes(x = day_of_week, y = minutes_of_dark)) +
+  labs(title = "Comparison of day of week and sunlight", x = "day of the week", y = "minutes of darkness")
+```
+
+```{r}
+ggplot(data=cd) +
+  geom_smooth(mapping = aes(minutes_of_dark, day_of_week))+
+  geom_point(mapping = aes(minutes_of_dark, day_of_week, color = minutes_of_dark))
+```
+
+```{r}
+t.test(cd$minutes_of_dark, cd$day_of_week)
+```
+
+```{r}
+
+# Checks all coefficients of dataset
+
+cor(cd[sapply(cd,is.numeric)])*100
+```
+
+```{r}
+# Fit a logistic regression model
+model <- glm(minutes_of_darkness ~ incident_hour + day_of_week + sex, data = cd, family = binomial(link = "logit"))
+
+```
+
+```{r}
+# Summary of the logistic regression model
+summary(model)
+
+# Predict probabilities for a new data point
+new_data <- data.frame(incident_hour = 20, day_of_week = 1, sex = 1) # Example new data
+predicted_prob <- predict(model, newdata = new_data, type = "response")
+
+```
+
+```{r}
+linear_reg <- lm(minutes_of_dark ~ day_of_week + incident_hour, data = cd)
+linear_reg
+```
