@@ -35,22 +35,58 @@ Ohio 2021 Sun Dark Data:
 
 
 # Hypothesis:
-Ha: As the minutes of sunlight decrease in a 24 period, there is no change to arrests between couples and ex-couples.
-Ho: As the minutes of darkness increase in a 24 hour period, arrests increase between couples and ex-couples.
+Ha: As the minutes of sunlight decrease in a 24 period, there is no change to arrests between 
+couples and ex-couples.
+
+Ho: As the minutes of darkness increase in a 24 hour period, arrests increase between couples 
+and ex-couples.
 
 
 # Analysis:
 Step I: 
-Obtained data from various sources, compiled the data into a database for querries. Connected PostrgreSQL to PowerBI and R Studio for testing and analysis.
+Obtained data from various sources, compiled the data into a database for querries. Connected 
+PostrgreSQL to PowerBI and R Studio for testing and analysis.
 
 Step II: 
-Created a Dashboard in PowerBI for a quick visual analysis, to better understand how to 
-test data in R
+Created a Dashboard in PowerBI, with visuals regarding increasing darkness and arrest records. 
+This allowed a quick understanding the data for the anlaysis in R.   
+
+![My Image](BI_Dashboard.PNG)
+
 Querried the data from R Studio and formatted for testing analysis. 
 
 Step III: 
-Created additional visualizations in R Studio to view the varible relationships, calculated the coefficients and aggregated the data to show total incidents by day. Increasing darkness throughout the year has a very small if any correlation with arrest rates for couples.
-Once the data was aggregated, a Poisson Test was performed, testing if the model could predict the arrests by the amount of minutes of darkness in a day. The low coefficient with minutes of darkness and arrests, provided the model little help. The MAE (mean absolute error is 19.45887), showing on average the model will predict within 19.45 arrests. The RMSE (root mean squared error is 25.04585), showing on average the model will predict within 25.04 arrests. 
+Created additional visualizations in R Studio to view the varible relationships.
+
+![My Chart](R_Arrest_min_of_dark) 
+
+Calculated the coefficients and aggregated the data to show total incidents by day. 
+
+![My Chart](cor)
+
+Increasing darkness throughout the year has a very small if any correlation with arrest rates for couples.
+Once the data was aggregated, a Poisson Test was performed, testing if the model could predict the arrests by the amount of minutes of darkness in a day. The low coefficient with minutes of darkness and arrests, provided the model little help. 
+
+![My Chart](000010.png)
+
+
+
+
+Poisson Test Results:
+Call:  glm(formula = incidents ~ minutes_of_darkness + dark_is + m_f + 
+    darker, family = "poisson", data = adf)
+
+Coefficients:
+        (Intercept)  minutes_of_darkness              dark_is                  m_f               darker  
+          5.3086731           -0.0004841            0.0388679           -0.0028640            0.0089943  
+
+Degrees of Freedom: 52148 Total (i.e. Null);  52144 Residual
+Null Deviance:	    239600 
+Residual Deviance: 216500 	AIC: 571900
+
+
+The MAE (mean absolute error is 19.45887), showing on average the model will predict within 19.45 arrests. 
+The RMSE (root mean squared error is 25.04585), showing on average the model will predict within 25.04 arrests.
 
 
 
