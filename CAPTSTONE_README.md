@@ -51,23 +51,21 @@ Step II:
 Created a Dashboard in PowerBI, with visuals regarding increasing darkness and arrest records. 
 This allowed a quick understanding the data for the anlaysis in R.   
 
-![My Image](BI_Dashboard.PNG)
+![My Image](Documentation/BI_Dashboard.PNG)
 
 Querried the data from R Studio and formatted for testing analysis. 
 
 Step III: 
 Created additional visualizations in R Studio to view the varible relationships.
 
-![My Chart](R_Arrest_min_of_dark) 
+![My Chart](Documentation/R_Arrest_min_of_dark) 
 
 Calculated the coefficients and aggregated the data to show total incidents by day. 
-
-![My Chart](cor)
 
 Increasing darkness throughout the year has a very small if any correlation with arrest rates for couples.
 Once the data was aggregated, a Poisson Test was performed, testing if the model could predict the arrests by the amount of minutes of darkness in a day. The low coefficient with minutes of darkness and arrests, provided the model little help. 
 
-![My Chart](000010.png)
+![My Chart](Documentation/000010.png)
 
 
 
