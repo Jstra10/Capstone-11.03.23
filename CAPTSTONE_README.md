@@ -53,11 +53,15 @@ PostrgreSQL to PowerBI and R Studio for testing and analysis.
 
 Step II: 
 Created a Dashboard in PowerBI, with visuals regarding increasing darkness and arrest records. 
-This allowed a quick understanding the data for the anlaysis in R.   
+This allowed a quick understanding the data for the anlaysis in R. You can see the average
+arrests per day was 142.92. The average while the darkness was increasing averaged 145, while 
+140 average arrests occured while the sunlight was increasing. You can also see the largest 
+amount of arrests (1184) occured when the darkness exceeded the sunlight.
+
 
 ![My Image](Documentation/BI_Dashboard.PNG)
 
-Querried the data from R Studio, and formatted/cleaned for testing analysis. 
+
 
 Step III: 
 Created additional visualizations in R Studio to view the variable relationships.
