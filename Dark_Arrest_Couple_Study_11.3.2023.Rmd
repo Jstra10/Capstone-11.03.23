@@ -39,7 +39,7 @@ con <- dbConnect(odbc::odbc(), .connection_string = connection_string, timeout =
 query <- 'SELECT crime_data.incident_date,crime_data.incident_hour, crime_data.sex_code, dark.minutes_of_darkness, dark.dark_is
 FROM crime_data
 JOIN dark ON crime_data.incident_date = dark.day;'
-#df <- dbGetQuery(con, query)
+df <- dbGetQuery(con, query)
 ```
 
 ```{r}
@@ -92,7 +92,9 @@ colSums(is.na(df))
 Created a new binary column = m_f. This references the sex_code category.
 
 ```{r}
+unique(df$sex_code)
 df$m_f <- ifelse(df$sex_code == "M", 1, 0)
+df
 ```
 
 Transformed the dark_is column values to 1 & 0 instead of "Increasing/Decreasing"
@@ -113,9 +115,12 @@ Created a new column to display if the minutes of darkness is over half a 24 hou
 
 ```{r}
 df$darker <- ifelse(df$minutes_of_darkness > 700, 1, 0)
+df
 ```
 
 ### III: Statistical Test and Analysis
+
+At a glance, arrests when minutes of darkness is increasing (red marks), looks high.
 
 ```{r}
 # Creating a visual to see the mapping of arrests and minutes of darkness
@@ -126,28 +131,11 @@ ggplot(adf) +
 ```
 
 ```{r}
-# Create a plot showing the model predicted data vs. actual data
-adf <- adf %>%
-  mutate(predicted_counts = predict(poisson_model, type = "response"))
-
-ggplot(adf, aes(x = incidents, y = predicted_counts)) +
-  geom_point(aes(color = "Actual"), alpha = 0.6, size = 3) +  
-  geom_point(aes(color = "Predicted"), shape = 1, size = 3) + 
-  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed") +
-  scale_color_manual(values = c("Actual" = "blue", "Predicted" = "black")) +
-  labs(
-    title = "Actual Data vs. Predicted",
-    x = "Actual",
-    y = "Predicted"
-  )
-```
-
-```{r}
 cor(adf[sapply(adf,is.numeric)])
 
 ```
 
-As dark is increasing (dark_is) there is a (very small) 0.091 correlation with incidents!
+As dark is increasing (dark_is), there is a (very small) 0.091 correlation with incidents!
 
 ```{r}
 ggplot(adf) +
@@ -179,10 +167,10 @@ poisson_model
 A one unit increase in minute of darkness shows a decrease in arrests. Rejecting the Alternative Hypothesis.. But, Wait! There is a small correlation of arrests to when the dark is increasing throughout the year!
 
 ```{r}
-# populating the predicted values from the poisson model
+# Populating the predicted values from the poisson model
 predicted_values <- predict(poisson_model, type = "response")
 
-# calculating the Mean Absolut Error and Root Mean Squared Error
+# Calculating the Mean Absolut Error and Root Mean Squared Error
 actual_values <- adf$incidents
 mae <- mean(abs(predicted_values - actual_values))
 rmse <- sqrt(mean((predicted_values - actual_values)^2))
@@ -196,6 +184,25 @@ rmse
 The MAE (mean absolute error is 19.45887). On average the model will predict within 19.45 arrests.
 
 The RMSE (root mean squared error is 25.04585) On average the model will predict within 25.04 arrests
+
+```{r}
+# Creating a plot showing the model predicted data vs. actual data
+adf <- adf %>%
+  mutate(predicted_counts = predict(poisson_model, type = "response"))
+
+ggplot(adf, aes(x = incidents, y = predicted_counts)) +
+  geom_point(aes(color = "Actual"), alpha = 0.6, size = 3) +  
+  geom_point(aes(color = "Predicted"), shape = 1, size = 3) + 
+  geom_abline(intercept = 0, slope = 1, color = "black", linetype = "dashed") +
+  scale_color_manual(values = c("Actual" = "blue", "Predicted" = "black")) +
+  labs(
+    title = "Actual Data vs. Predicted",
+    x = "Actual",
+    y = "Predicted"
+  )
+```
+
+The model predicted with very little accuracy.
 
 # Results
 
