@@ -120,7 +120,28 @@ df
 
 ### III: Statistical Test and Analysis
 
-At a glance, arrests when minutes of darkness is increasing (red marks), looks high.
+Creating a dataframe grouped by incident date, while creating a new row that show the total incidents for each date.
+
+```{r}
+adf <- df %>%
+  group_by(incident_date) %>%
+  mutate(incidents = n()) %>%
+  ungroup()
+adf
+```
+
+```{r}
+
+  ggplot(adf, aes(x = incident_date, y = incidents, fill = darker)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Incident Date", y = "Total Incidents") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Looking at the chart above, it looks like arrest could rise toward the increase in sunlight.
+
+Looking at the chart below, arrests when minutes of darkness is increasing (red marks), looks high.
 
 ```{r}
 # Creating a visual to see the mapping of arrests and minutes of darkness
@@ -148,14 +169,10 @@ Looking at the Arrests over Minutes of Darkness, you can see a peak of arrests w
 But, you can also see the arrests rising when the dark is increasing! Lets start the Poisson test.
 
 ```{r}
-# create a incident column counting the arrests for each date giving the model an additional variable to think with
+# Creating an incident column counting the arrests for each date giving the model an additional variable to think with
 # using the poisson test to predict arrests
 ?poisson
-adf <- df %>%
-  group_by(incident_date) %>%
-  mutate(incidents = n()) %>%
-  ungroup()
-adf
+
 
 poisson_model <- glm(incidents ~ minutes_of_darkness + dark_is + m_f + darker, data = adf, family = "poisson")
 poisson_model
